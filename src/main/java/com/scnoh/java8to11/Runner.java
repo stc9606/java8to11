@@ -29,4 +29,35 @@ public class Runner {
         System.out.println(isJava.test("Java Function"));
     }
 
+    private void run() {
+
+        int baseNumber = 10; // effective final
+
+        // 로컬, 익명 클래스는 run class 와 다른 scope
+        // 람다는 run 클래스와 같은 scope, 대신 변수에 대한 참조는 effective final 변수만 쉐도잉 가능
+
+        // 로컬 클래스
+        class LocalClass {
+            void printBaseNumber() {
+                System.out.println(baseNumber);
+            }
+        }
+
+        // 익명 클래스
+        Consumer<Integer> integerConsumer = new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) {
+                System.out.println(baseNumber);
+            }
+        };
+
+        // 람다
+        IntConsumer intConsumer = (i) -> {
+            System.out.println(i + baseNumber);
+        };
+
+        intConsumer.accept(10);
+
+    }
+
 }
