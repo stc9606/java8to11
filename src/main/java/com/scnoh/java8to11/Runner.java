@@ -29,6 +29,15 @@ public class Runner {
         System.out.println(isJava.test("Java Function"));
     }
 
+    private void person() {
+        Person person = new DefaultPerson();
+        System.out.println(person.getNameToUpperCase("class method"));
+        person.printMessage("default method !");
+
+        // static method
+        System.out.println(Person.getMethod());
+    }
+
     private void run() {
 
         int baseNumber = 10; // effective final
