@@ -42,7 +42,7 @@ public class OnlineClass {
     }
 
     public Optional<Progress> getProgress() {
-        return progress;
+        return Optional.ofNullable(progress);
     }
 
     public void setProgress(Progress progress) {

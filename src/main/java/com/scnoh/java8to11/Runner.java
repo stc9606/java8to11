@@ -1,15 +1,14 @@
 package com.scnoh.java8to11;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Runner {
-
-    public static void main(String[] args) {
-        optional();
-    }
 
     /**
      * TODO 함수형 인터페이스
@@ -119,8 +118,8 @@ public class Runner {
         // TODO
         Stream<String> stringTitles = scnohEvents.stream()
                 .flatMap(Collection::stream)
-                .map(c -> c.getTitle());
-        stringTitles.forEach(t -> System.out.println(t));
+                .map(OnlineClass::getTitle);
+        stringTitles.forEach(System.out::println);
 
 
         System.out.println("\n두 수업 목록에 들어있는 모든 수업 아이디 출력");
@@ -143,10 +142,10 @@ public class Runner {
 
         System.out.println("\n스프링 수업 중에 제목에 spring이 들어간 제목만 모아서 List로 만들기");
         List<String> stringList = springClasses.stream()
-                .filter(c -> c.getTitle().contains("spring"))
-                .map(c -> c.getTitle())
+                .map(OnlineClass::getTitle)
+                .filter(title -> title.contains("spring"))
                 .collect(Collectors.toList());
-        stringList.forEach(s -> System.out.println(s));
+        stringList.forEach(System.out::println);
     }
 
     public static void optional() {
@@ -158,7 +157,7 @@ public class Runner {
                 .filter(c -> c.getTitle().startsWith("optional"))
                 .findFirst();
 
-        if (optional.isPresent()) System.out.println(optional.get().getTitle());
+        optional.ifPresent(onlineClass -> System.out.println(onlineClass.getTitle()));
 
         // or else
         OnlineClass orElse = optional.orElse(createInstance());
@@ -166,7 +165,7 @@ public class Runner {
         System.out.println(orElse.getTitle());
 
         // or else get
-        OnlineClass orElseGet = optional.orElseGet(() -> createInstance());
+        OnlineClass orElseGet = optional.orElseGet(Runner::createInstance);
         System.out.println("\n====== or else get ======");
         System.out.println(orElseGet.getTitle());
 
@@ -176,14 +175,35 @@ public class Runner {
         System.out.println(orElseThrow);
         
         // optional map, flatMap
-        Optional<Optional<Progress>> mapOptional = optional.map(c -> c.getProgress());
-        Optional<Progress> flatMapOptional = optional.flatMap(c -> c.getProgress());
+        Optional<Optional<Progress>> mapOptional = optional.map(OnlineClass::getProgress);
+        Optional<Progress> flatMapOptional = optional.flatMap(OnlineClass::getProgress);
 
     }
 
     public static OnlineClass createInstance() {
         System.out.println("create instance");
         return new OnlineClass(10, "create class", true);
+    }
+
+    public static void concurrent() {
+
+        ExecutorService executorService = Executors.newScheduledThreadPool(2);
+        executorService.submit(() -> System.out.println("Job 1 " + Thread.currentThread().getName()));
+        executorService.submit(() -> System.out.println("Job 2 " + Thread.currentThread().getName()));
+        executorService.submit(() -> System.out.println("Job 3 " + Thread.currentThread().getName()));
+        executorService.submit(() -> System.out.println("Job 4 " + Thread.currentThread().getName()));
+
+        executorService.shutdown();
+
+        try {
+            executorService.awaitTermination(20, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        concurrent();
     }
 
 }
