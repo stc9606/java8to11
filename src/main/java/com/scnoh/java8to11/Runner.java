@@ -1,9 +1,6 @@
 package com.scnoh.java8to11;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -11,7 +8,7 @@ import java.util.stream.Stream;
 public class Runner {
 
     public static void main(String[] args) {
-        stream();
+        optional();
     }
 
     /**
@@ -150,6 +147,43 @@ public class Runner {
                 .map(c -> c.getTitle())
                 .collect(Collectors.toList());
         stringList.forEach(s -> System.out.println(s));
+    }
+
+    public static void optional() {
+        List<OnlineClass> optionals = new ArrayList<>();
+        optionals.add(new OnlineClass(1, "optional class", true));
+        optionals.add(new OnlineClass(5, "spring rest class", false));
+
+        Optional<OnlineClass> optional = optionals.stream()
+                .filter(c -> c.getTitle().startsWith("optional"))
+                .findFirst();
+
+        if (optional.isPresent()) System.out.println(optional.get().getTitle());
+
+        // or else
+        OnlineClass orElse = optional.orElse(createInstance());
+        System.out.println("\n====== or else ======");
+        System.out.println(orElse.getTitle());
+
+        // or else get
+        OnlineClass orElseGet = optional.orElseGet(() -> createInstance());
+        System.out.println("\n====== or else get ======");
+        System.out.println(orElseGet.getTitle());
+
+        // or else throw
+        OnlineClass orElseThrow = optional.orElseThrow(IllegalStateException::new);
+        System.out.println("\n====== or else throw ======");
+        System.out.println(orElseThrow);
+        
+        // optional map, flatMap
+        Optional<Optional<Progress>> mapOptional = optional.map(c -> c.getProgress());
+        Optional<Progress> flatMapOptional = optional.flatMap(c -> c.getProgress());
+
+    }
+
+    public static OnlineClass createInstance() {
+        System.out.println("create instance");
+        return new OnlineClass(10, "create class", true);
     }
 
 }
